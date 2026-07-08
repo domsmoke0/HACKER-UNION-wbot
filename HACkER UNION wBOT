@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HACKER UNION wBOT — Control Panel</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <div class="nav-logo">⚡</div>
+        <div class="nav-title">
+            <span class="brand-name">wBOT </span>
+            <span class="brand-sub">Control Panel</span>
+        </div>
+    </div>
+    <div class="nav-right">
+        <div class="nav-stats">
+            <div class="stat-pill">
+                <span class="dot dot-green"></span>
+                <span id="stat-online-count">0</span> Online
+            </div>
+            <div class="stat-pill">
+                <span class="dot dot-blue"></span>
+                <span id="stat-total-count">0</span> Total
+            </div>
+            <div class="stat-pill">
+                <span class="dot dot-purple"></span>
+                <span id="stat-memory">0</span> MB
+            </div>
+        </div>
+        <button id="admin-btn" class="admin-toggle-btn" onclick="toggleAdminPanel()">🔐 Admin</button>
+    </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            System Operational
+        </div>
+        <h1 class="hero-title">
+            Connect Your<br />
+            <span class="gradient-text">WhatsApp Bot</span>
+        </h1>
+        <p class="hero-sub">Pair your number in seconds and manage your own session.</p>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon">📱</div>
+            <div class="stat-info">
+                <div class="stat-value" id="s-total">0</div>
+                <div class="stat-label">Total Sessions</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🟢</div>
+            <div class="stat-info">
+                <div class="stat-value" id="s-online">0</div>
+                <div class="stat-label">Online Now</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-info">
+                <div class="stat-value" id="s-uptime">0s</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💾</div>
+            <div class="stat-info">
+                <div class="stat-value" id="s-memory">0 MB</div>
+                <div class="stat-label">Memory Used</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PAIRING CARD — visible to everyone -->
+    <section class="card pairing-card">
+        <div class="card-header">
+            <div class="card-icon">🔗</div>
+            <div>
+                <h2 class="card-title">Pair Your Number</h2>
+                <p class="card-sub">Enter your WhatsApp number to connect it to the bot</p>
+            </div>
+        </div>
+
+        <div class="pair-form">
+            <div class="input-group">
+                <span class="input-prefix">+</span>
+                <input type="tel" id="phone-input" class="phone-input"
+                    placeholder="2349028711461" maxlength="15" autocomplete="off" />
+                <button id="pair-btn" class="pair-btn" onclick="requestPair()">
+                    <span id="pair-btn-text">Get Code</span>
+                    <span id="pair-btn-spinner" class="spinner hidden"></span>
+                </button>
+            </div>
+            <p class="input-hint">Include country code without + sign. Example: <code>2349028711461</code></p>
+        </div>
+
+        <!-- CODE DISPLAY -->
+        <div id="code-display" class="code-display hidden">
+            <div class="code-header">
+                <span class="code-label">Your Pairing Code</span>
+                <span class="code-timer" id="code-timer">Valid for 60s</span>
+            </div>
+            <div class="code-box">
+                <span id="code-value" class="code-value">---- ----</span>
+                <button class="copy-btn" onclick="copyCode()" title="Copy code">
+                    <span id="copy-icon">📋</span>
+                </button>
+            </div>
+            <div class="code-steps">
+                <div class="step"><span class="step-num">1</span><span>Open WhatsApp on your phone</span></div>
+                <div class="step"><span class="step-num">2</span><span>Go to <strong>Settings → Linked Devices → Link a Device</strong></span></div>
+                <div class="step"><span class="step-num">3</span><span>Tap <strong>"Link with phone number instead"</strong> and enter the code above</span></div>
+            </div>
+            <div id="pair-status" class="pair-status"></div>
+        </div>
+
+        <div id="pair-error" class="alert alert-error hidden">
+            <span class="alert-icon">❌</span>
+            <span id="pair-error-text"></span>
+        </div>
+    </section>
+
+    <!-- SESSIONS -->
+    <section class="sessions-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title" id="sessions-title">Active Sessions</h2>
+                <p class="section-sub" id="sessions-sub">Pair your number above to see your session here</p>
+            </div>
+            <button class="refresh-btn" onclick="loadSessions()">
+                <span id="refresh-icon">🔄</span> Refresh
+            </button>
+        </div>
+
+        <div id="sessions-grid" class="sessions-grid">
+            <div class="empty-state" id="empty-state">
+                <div class="empty-icon">📭</div>
+                <div class="empty-title" id="empty-title">No sessions to show</div>
+                <div class="empty-sub" id="empty-sub">Pair your number above to get started</div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+    <div class="footer-inner">
+        <span class="footer-logo">⚡</span>
+        <span>© 2024 <strong>ShefzyTech</strong> — All rights reserved</span>
+        <span class="footer-dot">·</span>
+        <span>Michiko MD v3.0.0</span>
+        <span class="footer-dot">·</span>
+        <span>Built with ❤️ by <strong>Mr Shefzy</strong></span>
+    </div>
+</footer>
+
+<!-- ── ADMIN LOGIN MODAL ── -->
+<div id="admin-modal" class="modal-overlay hidden" onclick="handleAdminModalClick(event)">
+    <div class="modal">
+        <div class="modal-icon">🔐</div>
+        <h3 class="modal-title">Admin Access</h3>
+        <p class="modal-body">Enter your admin password to unlock full panel controls.</p>
+        <div class="admin-input-wrap">
+            <input type="password" id="admin-password" class="admin-password-input"
+                placeholder="Enter admin password" />
+        </div>
+        <div id="admin-login-error" class="alert alert-error hidden" style="margin:12px 0 0">
+            <span class="alert-icon">❌</span>
+            <span id="admin-login-error-text">Wrong password</span>
+        </div>
+        <div class="modal-actions" style="margin-top:20px">
+            <button class="btn-cancel" onclick="closeAdminModal()">Cancel</button>
+            <button class="btn-admin-login" onclick="submitAdminLogin()">Login</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── DELETE CONFIRM MODAL ── -->
+<div id="delete-modal" class="modal-overlay hidden" onclick="handleDeleteModalClick(event)">
+    <div class="modal">
+        <div class="modal-icon">⚠️</div>
+        <h3 class="modal-title">Delete Session?</h3>
+        <p class="modal-body">This will permanently log out <strong id="modal-phone"></strong> from the bot. You'll need to re-pair to use it again.</p>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-delete" id="modal-confirm-btn" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
